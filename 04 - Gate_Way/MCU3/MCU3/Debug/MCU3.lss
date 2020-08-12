@@ -1,0 +1,237 @@
+
+MCU3.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000012a  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000017e  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  0000017e  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001b0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000078  00000000  00000000  000001ec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000752  00000000  00000000  00000264  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000627  00000000  00000000  000009b6  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000389  00000000  00000000  00000fdd  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000100  00000000  00000000  00001368  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000032a  00000000  00000000  00001468  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000010b  00000000  00000000  00001792  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000058  00000000  00000000  0000189d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 68 00 	jmp	0xd0	; 0xd0 <__vector_12>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 61 00 	call	0xc2	; 0xc2 <main>
+  64:	0c 94 93 00 	jmp	0x126	; 0x126 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <I2C_intialize>:
+   the I2C_intialize() function before anything 
+ */ 
+#include "I2C_drive.h"
+
+void I2C_intialize(){
+	TWCR |= (1 << 2); //enable module
+  6c:	86 b7       	in	r24, 0x36	; 54
+  6e:	84 60       	ori	r24, 0x04	; 4
+  70:	86 bf       	out	0x36, r24	; 54
+	TWSR = 0x00 ; //set prescaller bits to zero 
+  72:	11 b8       	out	0x01, r1	; 1
+	TWBR = 0x47;
+  74:	87 e4       	ldi	r24, 0x47	; 71
+  76:	80 b9       	out	0x00, r24	; 0
+  78:	08 95       	ret
+
+0000007a <I2C_START>:
+}
+
+//to send start condition
+void I2C_START(){
+	TWCR = (1 << 7) | (1 << 5)| (1 << 2); //clearing the flag - send start - enable module 
+  7a:	84 ea       	ldi	r24, 0xA4	; 164
+  7c:	86 bf       	out	0x36, r24	; 54
+	while ((TWCR & (1 << 7)) == 0 );
+  7e:	06 b6       	in	r0, 0x36	; 54
+  80:	07 fe       	sbrs	r0, 7
+  82:	fd cf       	rjmp	.-6      	; 0x7e <I2C_START+0x4>
+}
+  84:	08 95       	ret
+
+00000086 <I2C_STOP>:
+//to send stop function
+void I2C_STOP(){
+	TWCR = (1 << 7) | (1 << 4)| (1 << 2); //clearing the flag - send stop - enable module
+  86:	84 e9       	ldi	r24, 0x94	; 148
+  88:	86 bf       	out	0x36, r24	; 54
+  8a:	08 95       	ret
+
+0000008c <I2C_WRITE>:
+	//while ((TWCR & (1 << 7)) == 0 );
+}
+// to send data
+void I2C_WRITE(unsigned char _data){
+	TWDR = _data ;
+  8c:	83 b9       	out	0x03, r24	; 3
+	TWCR = (1 << 7) | (1<<2); //clearing the flag to start operation of i2c- enable module
+  8e:	84 e8       	ldi	r24, 0x84	; 132
+  90:	86 bf       	out	0x36, r24	; 54
+	while ((TWCR & (1 << 7)) == 0 );
+  92:	06 b6       	in	r0, 0x36	; 54
+  94:	07 fe       	sbrs	r0, 7
+  96:	fd cf       	rjmp	.-6      	; 0x92 <I2C_WRITE+0x6>
+}
+  98:	08 95       	ret
+
+0000009a <spi_inialize>:
+#include <stdint.h>
+#include <util/delay.h>
+#define F_CPU 8000000
+// slave mode :
+void spi_inialize(){
+	DDRB &= ~(1 << 4); 	//congigure them as input
+  9a:	bc 98       	cbi	0x17, 4	; 23
+	DDRB &= ~(1 << 5);	 
+  9c:	bd 98       	cbi	0x17, 5	; 23
+	DDRB &= ~(1 << 7);
+  9e:	bf 98       	cbi	0x17, 7	; 23
+	DDRB |=  (1 << 6);
+  a0:	be 9a       	sbi	0x17, 6	; 23
+	SPCR |= ((1<<7)|(1<<SPE)|(1<<SPR0) ); //enable module and interrupt 
+  a2:	8d b1       	in	r24, 0x0d	; 13
+  a4:	81 6c       	ori	r24, 0xC1	; 193
+  a6:	8d b9       	out	0x0d, r24	; 13
+	SPCR &= ~ (1 << MSTR); // slave mode	
+  a8:	6c 98       	cbi	0x0d, 4	; 13
+  aa:	08 95       	ret
+
+000000ac <I2C_MC1>:
+}
+void I2C_MC1(){
+	I2C_START();
+  ac:	0e 94 3d 00 	call	0x7a	; 0x7a <I2C_START>
+	I2C_WRITE(0x3C);
+  b0:	8c e3       	ldi	r24, 0x3C	; 60
+  b2:	0e 94 46 00 	call	0x8c	; 0x8c <I2C_WRITE>
+	I2C_WRITE('s');
+  b6:	83 e7       	ldi	r24, 0x73	; 115
+  b8:	0e 94 46 00 	call	0x8c	; 0x8c <I2C_WRITE>
+	I2C_STOP();
+  bc:	0e 94 43 00 	call	0x86	; 0x86 <I2C_STOP>
+  c0:	08 95       	ret
+
+000000c2 <main>:
+}
+int main(void)
+{
+	DDRC |= (1 << 2);
+  c2:	a2 9a       	sbi	0x14, 2	; 20
+	sei();
+  c4:	78 94       	sei
+	spi_inialize();
+  c6:	0e 94 4d 00 	call	0x9a	; 0x9a <spi_inialize>
+	I2C_intialize();
+  ca:	0e 94 36 00 	call	0x6c	; 0x6c <I2C_intialize>
+  ce:	ff cf       	rjmp	.-2      	; 0xce <main+0xc>
+
+000000d0 <__vector_12>:
+    /* Replace with your application code */
+    while (1) 
+    {
+    }
+}
+ISR(SPI_STC_vect){
+  d0:	1f 92       	push	r1
+  d2:	0f 92       	push	r0
+  d4:	0f b6       	in	r0, 0x3f	; 63
+  d6:	0f 92       	push	r0
+  d8:	11 24       	eor	r1, r1
+  da:	2f 93       	push	r18
+  dc:	3f 93       	push	r19
+  de:	4f 93       	push	r20
+  e0:	5f 93       	push	r21
+  e2:	6f 93       	push	r22
+  e4:	7f 93       	push	r23
+  e6:	8f 93       	push	r24
+  e8:	9f 93       	push	r25
+  ea:	af 93       	push	r26
+  ec:	bf 93       	push	r27
+  ee:	ef 93       	push	r30
+  f0:	ff 93       	push	r31
+	uint8_t _data = SPDR ;
+  f2:	8f b1       	in	r24, 0x0f	; 15
+	if(_data == 'o'){
+  f4:	8f 36       	cpi	r24, 0x6F	; 111
+  f6:	31 f4       	brne	.+12     	; 0x104 <__vector_12+0x34>
+		PORTC ^= (1 << 2);
+  f8:	95 b3       	in	r25, 0x15	; 21
+  fa:	84 e0       	ldi	r24, 0x04	; 4
+  fc:	89 27       	eor	r24, r25
+  fe:	85 bb       	out	0x15, r24	; 21
+		I2C_MC1();
+ 100:	0e 94 56 00 	call	0xac	; 0xac <I2C_MC1>
+	}
+}
+ 104:	ff 91       	pop	r31
+ 106:	ef 91       	pop	r30
+ 108:	bf 91       	pop	r27
+ 10a:	af 91       	pop	r26
+ 10c:	9f 91       	pop	r25
+ 10e:	8f 91       	pop	r24
+ 110:	7f 91       	pop	r23
+ 112:	6f 91       	pop	r22
+ 114:	5f 91       	pop	r21
+ 116:	4f 91       	pop	r20
+ 118:	3f 91       	pop	r19
+ 11a:	2f 91       	pop	r18
+ 11c:	0f 90       	pop	r0
+ 11e:	0f be       	out	0x3f, r0	; 63
+ 120:	0f 90       	pop	r0
+ 122:	1f 90       	pop	r1
+ 124:	18 95       	reti
+
+00000126 <_exit>:
+ 126:	f8 94       	cli
+
+00000128 <__stop_program>:
+ 128:	ff cf       	rjmp	.-2      	; 0x128 <__stop_program>
